@@ -95,6 +95,7 @@ function playGame() {
   var roomName = getRoom(id).name;
   var roomDescription = getRoom(id).description;
   showtext(roomName + " : " + roomDescription);
+  showtext("what will " + player.name + " do?");
   inputElement.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
       var input = inputElement.value;
