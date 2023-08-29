@@ -1,4 +1,5 @@
 var inputElement = document.getElementById("input");
+start();
 
 function handleKeyDown(event) {
   if (event.key === "Enter") {
@@ -15,11 +16,21 @@ function showtext(text) {
 
   resultBox.scrollTop = resultBox.scrollHeight;
 }
-
-function playGame() {
-  var text = "This is some example text.";
+function getRoom(id) {
+  const room = rooms.find(room => room.id === id);
+  return room;
+}
+function start() {
+  var text = "name?";
   showtext(text);
 }
+function playGame() {
+  const player = new Player(inputElement.value);
+  inputElement.value = "";
+  showtext(player.name);
+
+}
+
 class Player {
   constructor(name = "Tofu") {
     this.name = name;
@@ -30,3 +41,14 @@ class Player {
     this.stamina = this.stamina - 5;
   }
 }
+
+class Room {
+  constructor(name, id, description) {
+    this.name = name;
+    this.id = id;
+    this.description = description;
+  }
+}
+var room1 = new Room("room 1", 1, "N.");
+var room10 = new Room("room 10", 10, "-.");
+const rooms = [room1,room10];
