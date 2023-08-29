@@ -17,7 +17,7 @@ function showtext(text) {
   resultBox.scrollTop = resultBox.scrollHeight;
 }
 function getRoom(id) {
-  const room = rooms.find(room => room.id === id);
+  const room = rooms.find((room) => room.id === id);
   return room;
 }
 function start() {
@@ -28,7 +28,11 @@ function playGame() {
   const player = new Player(inputElement.value);
   inputElement.value = "";
   showtext(player.name);
-
+  id = 1;
+  while (player.health > 0) {
+    var text = getRoom(id).description;
+    showtext(text);
+  }
 }
 
 class Player {
@@ -42,6 +46,23 @@ class Player {
   }
 }
 
+class Furniture {
+  constructor(name, id) {
+    this.name = name;
+    this.id = id;
+  }
+}
+class Door extends Furniture {
+  constructor(name, id, connectedRoomId) {
+    super(name, id);
+    this.connectedRoomId = connectedRoomId;
+  }
+
+  nextRoomId(id) {
+    this.connectedRoomId += id;
+  }
+}
+
 class Room {
   constructor(name, id, description) {
     this.name = name;
@@ -51,4 +72,4 @@ class Room {
 }
 var room1 = new Room("room 1", 1, "N.");
 var room10 = new Room("room 10", 10, "-.");
-const rooms = [room1,room10];
+const rooms = [room1, room10];
