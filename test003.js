@@ -38,13 +38,24 @@ class Room {
 var inputElement = document.getElementById("input");
 var id = 0;
 
-var room0 = new Room("room 0", 0, "มีทางในทิศ west north east.", ["west", "north", "east"]);
-var roomF1 = new Room("room F1", -1, "มีทางในทิศ north east.", ["north", "east"]);
-var room1 = new Room("room 1", 1, "มีทางในทิศ west north.", ["west", "north"]);
-var room100 = new Room("room 100", 100, "มีทางในทิศ west south east.", ["west","south","east"]);
-var room100F1 = new Room("room 100F1", 99, "มีทางในทิศ south east.", ["south", "east"]);
-var room101 = new Room("room 101", 101, "มีทางในทิศ west north.", ["west", "south"]);
-const rooms = [room0,roomF1,room1,room100,room100F1,room101];
+var room0 = new Room("room 0", 0, "มีทางในทิศ west north east.", [
+  "west", "north", "east",
+]);
+var roomF1 = new Room("room F1", -1, "มีทางในทิศ north east.", [
+  "north", "east",
+]);
+var room1 = new Room("room 1", 1, "มีทางในทิศ west north.", [
+  "west", "north"]);
+var room100 = new Room("room 100", 100, "มีทางในทิศ west south east.", [
+  "west", "south", "east",
+]);
+var room100F1 = new Room("room 100F1", 99, "มีทางในทิศ south east.", [
+  "south", "east",
+]);
+var room101 = new Room("room 101", 101, "มีทางในทิศ west north.", [
+  "west", "south",
+]);
+const rooms = [room0, roomF1, room1, room100, room100F1, room101];
 
 const player = new Player();
 start();
@@ -83,33 +94,53 @@ function start() {
 function playGame() {
   var roomName = getRoom(id).name;
   var roomDescription = getRoom(id).description;
-  showtext(roomName+" : "+roomDescription);
+  showtext(roomName + " : " + roomDescription);
   inputElement.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
-      var inputValue = inputElement.value;
+      var input = inputElement.value;
+      var checkWay = getRoom(id).ways;
       inputElement.value = "";
-      if (inputValue === "go north") {
-        text = player.name + " go north";
-        id += 100;
-      } else if (inputValue === "go south") {
-        text = player.name + " go south";
-        id -= 100;
-      } else if (inputValue === "go east") {
-        text = player.name + " go east";
-        id += 1;
-      } else if (inputValue === "go west") {
-        text = player.name + " go west";
-        id -= 1;
+      if (input === "go north") {
+        if (checkWay.includes("north")) {
+          text = player.name + " go north";
+          player.go();
+          id += 100;
+        } else {
+          text = "nothing there";
+        }
+      } else if (input === "go south") {
+        if (checkWay.includes("south")) {
+          text = player.name + " go south";
+          player.go();
+          id -= 100;
+        } else {
+          text = "nothing there";
+        }
+      } else if (input === "go east") {
+        if (checkWay.includes("east")) {
+          text = player.name + " go east";
+          player.go();
+          id += 1;
+        } else {
+          text = "nothing there";
+        }
+      } else if (input === "go west") {
+        if (checkWay.includes("west")) {
+          text = player.name + " go west";
+          player.go();
+          id -= 1;
+        } else {
+          text = "nothing there";
+        }
       } else {
         text = "again";
-        this.stamina += 5;
       }
-      player.go();
+      
       showtext(text);
       showPlayerDetail(player);
       var roomName = getRoom(id).name;
       var roomDescription = getRoom(id).description;
-      showtext(roomName+" : "+roomDescription);
+      showtext(roomName + " : " + roomDescription);
     }
   });
 }
