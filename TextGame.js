@@ -9,20 +9,16 @@ class Player {
   }
 }
 
-class Furniture {
-  constructor(name, id) {
+class Object {
+  constructor(name, id , description) {
     this.name = name;
     this.id = id;
+    this.description= description;
   }
 }
-class Door extends Furniture {
-  constructor(name, id, connectedRoomId) {
-    super(name, id);
-    this.connectedRoomId = connectedRoomId;
-  }
-
-  nextRoomId(id) {
-    this.connectedRoomId += id;
+class Item extends Object {
+  constructor(name, id, description) {
+    super(name, id, description);
   }
 }
 
