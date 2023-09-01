@@ -1,10 +1,39 @@
 class Player {
   constructor(name = "Tofu") {
-    this.name = name;
-    this.health = 100;
-    this.stamina = 100;
-    this.inventory = [];
+    this._name = name;
+    this._health = 100;
+    this._stamina = 100;
+    this._inventory = [];
   }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(value) {
+    this._name = value;
+  }
+
+  get health() {
+    return this._health;
+  }
+
+  set health(value) {
+    this._health = value;
+  }
+
+  get stamina() {
+    return this._stamina;
+  }
+
+  set stamina(value) {
+    this._stamina = value;
+  }
+
+  get inventory() {
+    return this._inventory;
+  }
+
   go() {
     this.stamina = this.stamina - 5;
   }
@@ -29,6 +58,7 @@ class Player {
       this.inventory.splice(index, 1);
     }
   }
+
   take(object, room) {
     this.addInventory(object);
     room.delObjects(object.name);
@@ -37,11 +67,30 @@ class Player {
 
 class Object {
   constructor(name, id, description) {
-    this.name = name;
-    this.id = id;
-    this.description = description;
+    this._name = name;
+    this._id = id;
+    this._description = description;
+  }
+  get name() {
+    return this._name;
+  }
+  set name(value) {
+    this._name = value;
+  }
+  get id() {
+    return this._id;
+  }
+  set id(value) {
+    this._id = value;
+  }
+  get description() {
+    return this._description;
+  }
+  set description(value) {
+    this._description = value;
   }
 }
+
 class Flashlight extends Object {
   constructor(name, id, description) {
     super(name, id, description);
@@ -51,12 +100,37 @@ class Flashlight extends Object {
 
 class Room {
   constructor(name, id, description, ways = [], objects = []) {
-    this.name = name;
-    this.id = id;
-    this.description = description;
-    this.ways = ways;
-    this.objects = objects;
+    this._name = name;
+    this._id = id;
+    this._description = description;
+    this._ways = ways;
+    this._objects = objects;
   }
+  get name() {
+    return this._name;
+  }
+  set name(value) {
+    this._name = value;
+  }
+  get id() {
+    return this._id;
+  }
+  set id(value) {
+    this._id = value;
+  }
+  get description() {
+    return this._description;
+  }
+  set description(value) {
+    this._description = value;
+  }
+  get ways() {
+    return this._ways;
+  }
+  get objects() {
+    return this._objects;
+  }
+
   delObjects(objectName) {
     const index = this.objects.findIndex((obj) => obj.name === objectName);
     if (index !== -1) {
@@ -73,6 +147,7 @@ class Room {
     }
   }
 }
+
 class Darkroom extends Room {
   constructor(name, id, description, ways, objects) {
     super(name, id, description, ways, objects);
@@ -199,26 +274,30 @@ function playGame() {
         } else {
           text = "No " + objectName + " here.";
         }
-      } else if (input === "go north" && checkWay.includes("north")) {
-        text = player.name + " go north";
-        player.go();
-        id += 100;
-      } else if (input === "go south" && checkWay.includes("south")) {
-        text = player.name + " go south";
-        player.go();
-        id -= 100;
-      } else if (input === "go east" && checkWay.includes("east")) {
-        text = player.name + " go east";
-        player.go();
-        id += 1;
-      } else if (input === "go west" && checkWay.includes("west")) {
-        text = player.name + " go west";
-        player.go();
-        id -= 1;
+      } else if (input.includes("go ")) {
+        var direction = input.split(" ")[1];
+        if (checkWay.includes(direction)) {
+          if (player.stamina >= 5) {
+            text = player.name + " goes " + direction;
+            player.go();
+            if (direction === "north") {
+              id += 100;
+            } else if (direction === "south") {
+              id -= 100;
+            } else if (direction === "east") {
+              id += 1;
+            } else if (direction === "west") {
+              id -= 1;
+            }
+          } else {
+            text = player._name + " tired.";
+          }
+        } else {
+          text = "nothing there.";
+        }
       } else {
-        text = "nothing there";
+        text = "try again.";
       }
-
       showtext(text);
       showPlayerDetail(player);
       var roomName = getRoom(id).name;
