@@ -143,8 +143,11 @@ function start() {
   playGame();
 }
 function playGame() {
-  var roomName = getRoom(1).getName();
-  var roomDescription = getRoom(1).getDescription();
-  showtext(roomName + ": " + roomDescription);
+  var room = getRoom(0); 
+  if (room) {
+    var roomName = room.getName(); 
+    var roomDescription = room.getDescription();
+    showtext(roomName + ": " + roomDescription);
+  }
   showtext("what will " + player.getName() + " do?");
 }
