@@ -31,8 +31,30 @@ class Player {
     return this._inventory;
   }
 
-  go() {
-    this.stamina = this.stamina - 5;
+  go(input) {
+    var intake = input.split(" ")[1];
+    var ways = getRoom(id).getWays();
+
+    if (ways.includes(intake)) {
+      if (this._stamina >= 5) {
+        var text = this._name + " goes " + intake;
+        if (intake === "north") {
+          id += 100;
+        } else if (intake === "south") {
+          id -= 100;
+        } else if (intake === "east") {
+          id += 1;
+        } else if (intake === "west") {
+          id -= 1;
+        }
+        this._stamina -= 5;
+      } else {
+        var text = this._name + " tired.";
+      }
+    } else {
+      var text = "nothing there.";
+    }
+    showtext(text);
   }
 }
 class Room {
@@ -64,7 +86,7 @@ class Room {
     this._description = description;
   }
 
-  getWys() {
+  getWays() {
     return this._ways;
   }
   getObjects() {
@@ -72,7 +94,7 @@ class Room {
   }
 }
 var inputElement = document.getElementById("input");
-
+var id = 0;
 var room0 = new Room(
   "room 0",
   0,
@@ -94,7 +116,28 @@ var room1 = new Room(
   ["west", "north"],
   []
 );
-const rooms = [room0, roomF1, room1];
+var room100 = new Room(
+  "room 100",
+  100,
+  "มีทางในทิศ west south east.",
+  ["west", "south", "east"],
+  []
+);
+var room100F1 = new Room(
+  "room 100F1",
+  99,
+  "มีทางในทิศ south east.",
+  ["south", "east"],
+  []
+);
+var room101 = new Room(
+  "room 101",
+  101,
+  "มีทางในทิศ west north.",
+  ["west", "south"],
+  []
+);
+const rooms = [room0, roomF1, room1, room100, room100F1, room101];
 
 const player = new Player();
 start();
@@ -108,16 +151,16 @@ function showtext(text) {
 }
 
 function getRoom(id) {
-  const room = rooms.find((room) => room.id === id);
+  const room = rooms.find((room) => room.getId() === id);
   return room;
 }
 
 function details(player) {
-  var detail = "Name: " + player.getName() + "<br>";
-  detail += "Health: " + player.getHealth() + "<br>";
-  detail += "Stamina: " + player.getStamina() + "<br>";
+  var detail = "Name " + player.getName() + "<br>";
+  detail += "Health " + player.getHealth() + "<br>";
+  detail += "Stamina " + player.getStamina() + "<br>";
   detail += "<br>";
-  detail += "Inventory: " + "<br>";
+  detail += "Inventory " + "<br>";
   player.getInventory().forEach(function (item) {
     if (Array.isArray(item)) {
       item.forEach(function (subItem) {
@@ -143,11 +186,29 @@ function start() {
   playGame();
 }
 function playGame() {
-  var room = getRoom(0); 
-  if (room) {
-    var roomName = room.getName(); 
-    var roomDescription = room.getDescription();
-    showtext(roomName + ": " + roomDescription);
-  }
+  var room = getRoom(id);
+  var roomName = room.getName();
+  var roomDescription = room.getDescription();
+  showtext(roomName + ": " + roomDescription);
   showtext("what will " + player.getName() + " do?");
+
+  inputElement.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      var input = inputElement.value;
+      inputElement.value = "";
+
+      if (input.includes("go ")) {
+        player.go(input);
+      } else {
+        var text = "try again.";
+        showtext(text);
+      }
+
+      var room = getRoom(id);
+      roomName = room.getName();
+      roomDescription = room.getDescription();
+      showtext(roomName + ": " + roomDescription);
+      showtext("what will " + player.getName() + " do?");
+    }
+  });
 }
