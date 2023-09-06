@@ -1,171 +1,166 @@
 class Player {
+  #name;
+  #health;
+  #stamina;
+  #inventory;
+
   constructor(name = "Tofu") {
-    this._name = name;
-    this._health = 100;
-    this._stamina = 100;
-    this._inventory = [];
+    this.#name = name;
+    this.#health = 100;
+    this.#stamina = 100;
+    this.#inventory = [];
   }
 
-  get name() {
-    return this._name;
+  getName() {
+    return this.#name;
+  }
+  setName(name) {
+    this.#name = name;
   }
 
-  set name(value) {
-    this._name = value;
+  getHealth() {
+    return this.#health;
+  }
+  setHealth(health) {
+    this.#health = health;
   }
 
-  get health() {
-    return this._health;
+  getStamina() {
+    return this.#stamina;
   }
-
-  set health(value) {
-    this._health = value;
-  }
-
-  get stamina() {
-    return this._stamina;
-  }
-
-  set stamina(value) {
-    this._stamina = value;
-  }
-
-  get inventory() {
-    return this._inventory;
-  }
-
-  go() {
-    this.stamina = this.stamina - 5;
+  setStamina(value) {
+    this.#stamina = value;
   }
 
   getInventory() {
-    for (const item of this.inventory) {
-      if (Array.isArray(item)) {
-        for (const subItem of item) {
-          console.log(subItem.name);
-        }
-      } else {
-        console.log(item.name);
-      }
-    }
-  }
-  addInventory(object) {
-    this.inventory.push(object);
-  }
-  delInventory(object) {
-    const index = this.inventory.indexOf(object);
-    if (index !== -1) {
-      this.inventory.splice(index, 1);
-    }
+    return this.#inventory;
   }
 
-  take(object, room) {
-    this.addInventory(object);
-    room.delObjects(object.name);
+  go(input) {
+    var intake = input.split(" ")[1];
+    var ways = getRoom(id).getWays();
+
+    if (ways.includes(intake)) {
+      if (this.#stamina >= 5) {
+        var text = this.#name + " goes " + intake;
+        if (intake === "north") {
+          id += 100;
+        } else if (intake === "south") {
+          id -= 100;
+        } else if (intake === "east") {
+          id += 1;
+        } else if (intake === "west") {
+          id -= 1;
+        }
+        this.#stamina -= 5;
+      } else {
+        var text = this.#name + " tired.";
+      }
+    } else {
+      var text = "nothing there.";
+    }
+    showtext(text);
   }
 }
 
 class Object {
+  #name;
+  #id;
+  #description;
+
   constructor(name, id, description) {
-    this._name = name;
-    this._id = id;
-    this._description = description;
+    this.#name = name;
+    this.#id = id;
+    this.#description = description;
   }
-  get name() {
-    return this._name;
+  getName() {
+    return this.#name;
   }
-  set name(value) {
-    this._name = value;
+  setName(name) {
+    this.#name = name;
   }
-  get id() {
-    return this._id;
+
+  getId() {
+    return this.#id;
   }
-  set id(value) {
-    this._id = value;
+  setId(id) {
+    this.#id = id;
   }
-  get description() {
-    return this._description;
+
+  getDescription() {
+    return this.#description;
   }
-  set description(value) {
-    this._description = value;
+  setDescription(description) {
+    this.#description = description;
   }
 }
-
-class Flashlight extends Object {
+class Note extends Object {
   constructor(name, id, description) {
     super(name, id, description);
   }
-  open() {}
 }
 
 class Room {
+  #name;
+  #id;
+  #description;
+  #ways;
+  #objects;
+
   constructor(name, id, description, ways = [], objects = []) {
-    this._name = name;
-    this._id = id;
-    this._description = description;
-    this._ways = ways;
-    this._objects = objects;
+    this.#name = name;
+    this.#id = id;
+    this.#description = description;
+    this.#ways = ways;
+    this.#objects = objects;
   }
-  get name() {
-    return this._name;
+  getName() {
+    return this.#name;
   }
-  set name(value) {
-    this._name = value;
-  }
-  get id() {
-    return this._id;
-  }
-  set id(value) {
-    this._id = value;
-  }
-  get description() {
-    return this._description;
-  }
-  set description(value) {
-    this._description = value;
-  }
-  get ways() {
-    return this._ways;
-  }
-  get objects() {
-    return this._objects;
+  setName(name) {
+    this.#name = name;
   }
 
-  delObjects(objectName) {
-    const index = this.objects.findIndex((obj) => obj.name === objectName);
-    if (index !== -1) {
-      this.objects.splice(index, 1);
-    }
+  getId() {
+    return this.#id;
   }
-  getObjectsName() {
-    if (this.objects && this.objects.length > 0) {
-      const objectNames = this.objects.map((object) => object.name);
-      const objectNamesString = objectNames.join(", ");
-      return objectNamesString;
-    } else {
-      return "ไม่มี";
-    }
+  setId(id) {
+    this.#id = id;
+  }
+
+  getDescription() {
+    return this.#description;
+  }
+  setDescription(description) {
+    this.#description = description;
+  }
+
+  getWays() {
+    return this.#ways;
+  }
+  getObjects() {
+    return this.#objects;
   }
 }
-
-class Darkroom extends Room {
-  constructor(name, id, description, ways, objects) {
-    super(name, id, description, ways, objects);
+class Outside extends Room {
+  constructor(name, id, description, ways = [], objects = []) {
+    super(name, id, description, ways = [], objects = []);
   }
-  darkroom() {}
+  ending() {
+    var text = "Ending";
+    showtext(text);
+    showPopup();
+  }
 }
 
 var inputElement = document.getElementById("input");
 var id = 0;
-
-var flashlight1 = new Flashlight("flashlight1", 1, "ใช้ในการส่องแสง");
-
 var room0 = new Room(
   "room 0",
   0,
   "มีทางในทิศ west north east.",
   ["west", "north", "east"],
-  [flashlight1]
+  []
 );
 var roomF1 = new Room(
   "room F1",
@@ -181,7 +176,7 @@ var room1 = new Room(
   ["west", "north"],
   []
 );
-var room100 = new Darkroom(
+var room100 = new Room(
   "room 100",
   100,
   "มีทางในทิศ west south east.",
@@ -198,13 +193,15 @@ var room100F1 = new Room(
 var room101 = new Room(
   "room 101",
   101,
-  "มีทางในทิศ west north.",
-  ["west", "south"],
+  "มีทางในทิศ west south north.",
+  ["west", "south", "north"],
   []
 );
-const rooms = [room0, roomF1, room1, room100, room100F1, room101];
+var out201 = new Outside("out 201", 201, "ข้างนอก.", [], []);
+const rooms = [room0, roomF1, room1, room100, room100F1, room101, out201];
 
 const player = new Player();
+closePopup();
 start();
 
 function showtext(text) {
@@ -214,98 +211,101 @@ function showtext(text) {
   resultBox.appendChild(resultElement);
   resultBox.scrollTop = resultBox.scrollHeight;
 }
-function showDetails(player) {
-  var detail = "Name: " + player.name + "<br>";
-  detail += "Health: " + player.health + "<br>";
-  detail += "Stamina: " + player.stamina + "<br>";
+
+function getRoom(id) {
+  const room = rooms.find((room) => room.getId() === id);
+  return room;
+}
+
+function details(player) {
+  var detail = "Name " + player.getName() + "<br>";
+  detail += "Health " + player.getHealth() + "<br>";
+  detail += "Stamina " + player.getStamina() + "<br>";
   detail += "<br>";
-  detail += "Inventory: " + "<br>";
-  player.inventory.forEach(function (item) {
-    if (Array.isArray(item)) {
-      item.forEach(function (subItem) {
-        detail += subItem.name + "<br>";
+  detail += "Inventory " + "<br>";
+  player.getInventory().forEach(function (items) {
+    if (Array.isArray(items)) {
+      items.forEach(function (item) {
+        detail += item.getName() + "<br>";
       });
-    } else {
-      detail += item.name + "<br>";
     }
   });
   detail += "<br>";
-  detail += "what " + player.name + " can do" + "<br>";
+  detail += "what " + player.getName() + " can do" + "<br>";
   detail += "go north|go south|go east|go west" + "<br>";
-  detail += "take {object}" + "<br>";
+  detail += "take {item}" + "<br>";
   return detail;
 }
-
-function showPlayerDetail(player) {
+function showDetails(player) {
   var playerDetails = document.getElementById("playerDetail");
-  playerDetails.innerHTML = showDetails(player);
+  playerDetails.innerHTML = details(player);
 }
-function getRoom(id) {
-  const room = rooms.find((room) => room.id === id);
-  return room;
+
+function showPopup() {
+  var popup = document.getElementById("popup");
+  var body = document.body;
+  popup.style.display = "flex";
+  body.style.overflow = "hidden";
+}
+function closePopup() {
+  var popup = document.getElementById("popup");
+  var body = document.body;
+  popup.style.display = "none";
+  body.style.overflow = "auto";
+}
+function reloadPage() {
+  location.reload();
 }
 
 function start() {
   var enterName = prompt("name?");
-  player.name = enterName;
-  showPlayerDetail(player);
+  player.setName(enterName);
+  showDetails(player);
+  playGame();
+}
+function start() {
+  var enterName = prompt("name?");
+  player.setName(enterName);
+  showDetails(player);
   playGame();
 }
 function playGame() {
-  var roomName = getRoom(id).name;
-  var roomDescription = getRoom(id).description;
-  var roomObjectsName = getRoom(id).getObjectsName();
-  showtext(
-    roomName + " : Objects_" + roomObjectsName + " และ" + roomDescription
-  );
-  showtext("what will " + player.name + " do?");
+  var room = getRoom(id);
+  var roomName = room.getName();
+  var roomDescription = room.getDescription();
+  showtext(roomName + ": " + roomDescription);
+  showtext("what will " + player.getName() + " do?");
+
   inputElement.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
       var input = inputElement.value;
-      var checkWay = getRoom(id).ways;
       inputElement.value = "";
-      if (input.includes("take")) {
-        const objectName = input.split("take ")[1].trim();
-        const room = getRoom(id);
-        const object = room.objects.find((obj) => obj.name === objectName);
-        if (object) {
-          text = player.name + " take " + object.name;
-          player.take(object, room);
-        } else {
-          text = "No " + objectName + " here.";
-        }
-      } else if (input.includes("go ")) {
-        var direction = input.split(" ")[1];
-        if (checkWay.includes(direction)) {
-          if (player.stamina >= 5) {
-            text = player.name + " goes " + direction;
-            player.go();
-            if (direction === "north") {
-              id += 100;
-            } else if (direction === "south") {
-              id -= 100;
-            } else if (direction === "east") {
-              id += 1;
-            } else if (direction === "west") {
-              id -= 1;
-            }
-          } else {
-            text = player._name + " tired.";
-          }
-        } else {
-          text = "nothing there.";
-        }
+
+      if (input.includes("go ")) {
+        player.go(input);
       } else {
-        text = "try again.";
+        var text = "try again.";
+        showtext(text);
       }
-      showtext(text);
-      showPlayerDetail(player);
-      var roomName = getRoom(id).name;
-      var roomDescription = getRoom(id).description;
-      var roomObjectsName = getRoom(id).getObjectsName();
-      showtext(
-        roomName + " : Objects_" + roomObjectsName + " และ" + roomDescription
-      );
+
+      var room = getRoom(id);
+      roomName = room.getName();
+      roomDescription = room.getDescription();
+      showDetails(player);
+      if (room instanceof Outside) {
+        room.ending();
+
+        showtext(roomName + ": " + roomDescription);
+
+        var resultBox = document.getElementById("resultBox");
+        var reloadButton = document.createElement("button");
+        reloadButton.addEventListener("click", reloadPage);
+        reloadButton.innerHTML = "reset";
+        resultBox.appendChild(reloadButton);
+      } else {
+        showtext(roomName + ": " + roomDescription);
+        showtext("what will " + player.getName() + " do?");
+      }
     }
   });
 }
