@@ -144,7 +144,7 @@ class Room {
 }
 class Outside extends Room {
   constructor(name, id, description, ways = [], objects = []) {
-    super(name, id, description, ways = [], objects = []);
+    super(name, id, description, (ways = []), (objects = []));
   }
   ending() {
     var text = "Ending";
