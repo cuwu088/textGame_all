@@ -35,6 +35,15 @@ class Player {
   getInventory() {
     return this.#inventory;
   }
+  addInventory(item) {
+    this.#inventory.push(item);
+  }
+  delInventory(item) {
+    const index = this.#inventory.indexOf(item);
+    if (index !== -1) {
+      this.#inventory.splice(index, 1);
+    }
+  }
 
   go(input) {
     var intake = input.split(" ")[1];
@@ -60,6 +69,19 @@ class Player {
       var text = "nothing there.";
     }
     showtext(text);
+  }
+
+  take(item, roomID) {
+    var room = getRoom(roomID);
+    const itemName = input.split("take ")[1].trim();
+        const object = room.objects.find((obj) => obj.name === itemName);
+        if (object) {
+          text = player.name + " take " + object.name;
+          this.addInventory(item);
+          room.delObjects(item.getName());
+        } else {
+          text = "No " + objectName + " here.";
+        }
   }
 }
 
@@ -156,10 +178,10 @@ class Outside extends Room {
 var inputElement = document.getElementById("input");
 var id = 0;
 var room0 = new Room(
-  "room 0",
+  "bedroom",
   0,
-  "มีทางในทิศ west north east.",
-  ["west", "north", "east"],
+  "ในห้องนี้มีเตียงแล้วมี ตู้ อยู่ข้างซ้ายของเตียงเเละหัวเตียงไปทางที่ตรงข้ามกับประตูทางออกจากห้องนอนในทิศ west และยังมีโต๊ะรูปทรงสี่เหลียมมีเก้าอี้หันไปทางประตูที่มี ไฟฉาย วางไว้อยู่บนโต๊ะข้างทางออก.",
+  ["west"],
   []
 );
 var roomF1 = new Room(
@@ -179,8 +201,8 @@ var room1 = new Room(
 var room100 = new Room(
   "room 100",
   100,
-  "มีทางในทิศ west south east.",
-  ["west", "south", "east"],
+  "มีทางในทิศ west east.",
+  ["west", "east"],
   []
 );
 var room100F1 = new Room(
@@ -193,8 +215,21 @@ var room100F1 = new Room(
 var room101 = new Room(
   "room 101",
   101,
-  "มีทางในทิศ west south north.",
-  ["west", "south", "north"],
+  "มีทางในทิศ west south north east.",
+  ["west", "south", "north", "east"],
+  []
+);var room102 = new Room(
+  "room 102",
+  102,
+  "มีทางในทิศ west east.",
+  ["west", "east"],
+  []
+);
+var room103 = new Room(
+  "room 103",
+  103,
+  "มีทางในทิศ west.",
+  ["west"],
   []
 );
 var out201 = new Outside("out 201", 201, "ข้างนอก.", [], []);
@@ -205,9 +240,9 @@ closePopup();
 start();
 
 function showtext(text) {
+  var resultBox = document.getElementById("resultBox");
   var resultElement = document.createElement("p");
   resultElement.innerHTML = text;
-  var resultBox = document.getElementById("resultBox");
   resultBox.appendChild(resultElement);
   resultBox.scrollTop = resultBox.scrollHeight;
 }
@@ -271,9 +306,10 @@ function start() {
 }
 function playGame() {
   var room = getRoom(id);
-  var roomName = room.getName();
   var roomDescription = room.getDescription();
-  showtext(roomName + ": " + roomDescription);
+  showtext("*เพล้ง*....")
+  showtext(player.getName()+" ลืมตาขึ้นมาในห้องนอนเนื่องจากเสียงบางอยางเเตก...ดูเหมือนจะมาจากห้องอื่น")
+  showtext(roomDescription);
   showtext("what will " + player.getName() + " do?");
 
   inputElement.addEventListener("keydown", function (event) {
@@ -283,6 +319,8 @@ function playGame() {
 
       if (input.includes("go ")) {
         player.go(input);
+      } else if (input.includes("take ")) {
+        player.take(input, id);
       } else {
         var text = "try again.";
         showtext(text);
