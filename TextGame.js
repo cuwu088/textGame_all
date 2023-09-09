@@ -71,18 +71,22 @@ class Player {
     showtext(text);
   }
 
-  take(item, roomID) {
+  take(itemName, roomID) {
     var room = getRoom(roomID);
-    const itemName = input.split("take ")[1].trim();
-        const object = room.objects.find((obj) => obj.name === itemName);
-        if (object) {
-          text = player.name + " take " + object.name;
-          this.addInventory(item);
-          room.delObjects(item.getName());
-        } else {
-          text = "No " + objectName + " here.";
-        }
+    const object = room.getItems().find((obj) => obj.getName() === itemName);
+    var text;
+  
+    if (object) {
+      text = this.#name + " takes " + object.getName();
+      this.addInventory(object);
+      room.delItems(itemName);
+      room.setDescription(room.getDescription(), object)
+    } else {
+      text = this.#name + ": ....";
+    }
+    showtext(text);
   }
+  
 }
 
 class Object {
@@ -121,6 +125,11 @@ class Note extends Object {
     super(name, id, description);
   }
 }
+class Flashlight extends Object {
+  constructor(name, id, description) {
+    super(name, id, description);
+  }
+}
 
 class Room {
   #name;
@@ -128,13 +137,15 @@ class Room {
   #description;
   #ways;
   #objects;
+  #items;
 
-  constructor(name, id, description, ways = [], objects = []) {
+  constructor(name, id, description, ways = [], objects = [], items = []) {
     this.#name = name;
     this.#id = id;
     this.#description = description;
     this.#ways = ways;
     this.#objects = objects;
+    this.#items = items;
   }
   getName() {
     return this.#name;
@@ -156,6 +167,10 @@ class Room {
   setDescription(description) {
     this.#description = description;
   }
+  setDescription(description, item) {
+    const updatedDescription = description.replace(item.getName(), "");
+    this.#description = updatedDescription;
+  }
 
   getWays() {
     return this.#ways;
@@ -163,10 +178,18 @@ class Room {
   getObjects() {
     return this.#objects;
   }
+
+  getItems() {
+    return this.#items;
+  }
+  delItems(itemName) {
+    const updatedItems = this.getItems().filter((obj) => obj.getName() !== itemName);
+    this.#items = updatedItems;
+  }
 }
 class Outside extends Room {
-  constructor(name, id, description, ways = [], objects = []) {
-    super(name, id, description, (ways = []), (objects = []));
+  constructor(name, id, description, ways = [], objects = [], items = []) {
+    super(name, id, description, (ways = []), (objects = []), (items = []));
   }
   ending() {
     var text = "Ending";
@@ -177,18 +200,23 @@ class Outside extends Room {
 
 var inputElement = document.getElementById("input");
 var id = 0;
+
+var flashlight = new Flashlight("flashlight", 1, "ใช้ในการส่องแสง");
+
 var room0 = new Room(
   "bedroom",
   0,
-  "ในห้องนี้มีเตียงแล้วมี ตู้ อยู่ข้างซ้ายของเตียงเเละหัวเตียงไปทางที่ตรงข้ามกับประตูทางออกจากห้องนอนในทิศ west และยังมีโต๊ะรูปทรงสี่เหลียมมีเก้าอี้หันไปทางประตูที่มี ไฟฉาย วางไว้อยู่บนโต๊ะข้างทางออก.",
+  "ในห้องนี้มีเตียงแล้วมี ตู้ อยู่ข้างซ้ายของเตียงเเละหัวเตียงไปทางที่ตรงข้ามกับประตูทางออกจากห้องนอนในทิศตะวันตก(west)และยังมีโต๊ะรูปทรงสี่เหลียมมีเก้าอี้หันไปทางประตูที่มี flashlight วางไว้อยู่บนโต๊ะข้างทางออก.",
   ["west"],
-  []
+  [],
+  [flashlight]
 );
 var roomF1 = new Room(
   "room F1",
   -1,
   "มีทางในทิศ north east.",
   ["north", "east"],
+  [],
   []
 );
 var room1 = new Room(
@@ -196,6 +224,7 @@ var room1 = new Room(
   1,
   "มีทางในทิศ west north.",
   ["west", "north"],
+  [],
   []
 );
 var room100 = new Room(
@@ -203,6 +232,7 @@ var room100 = new Room(
   100,
   "มีทางในทิศ west east.",
   ["west", "east"],
+  [],
   []
 );
 var room100F1 = new Room(
@@ -210,6 +240,7 @@ var room100F1 = new Room(
   99,
   "มีทางในทิศ south east.",
   ["south", "east"],
+  [],
   []
 );
 var room101 = new Room(
@@ -217,21 +248,18 @@ var room101 = new Room(
   101,
   "มีทางในทิศ west south north east.",
   ["west", "south", "north", "east"],
+  [],
   []
-);var room102 = new Room(
+);
+var room102 = new Room(
   "room 102",
   102,
   "มีทางในทิศ west east.",
   ["west", "east"],
+  [],
   []
 );
-var room103 = new Room(
-  "room 103",
-  103,
-  "มีทางในทิศ west.",
-  ["west"],
-  []
-);
+var room103 = new Room("room 103", 103, "มีทางในทิศ west.", ["west"], []);
 var out201 = new Outside("out 201", 201, "ข้างนอก.", [], []);
 const rooms = [room0, roomF1, room1, room100, room100F1, room101, out201];
 
@@ -253,22 +281,19 @@ function getRoom(id) {
 }
 
 function details(player) {
-  var detail = "Name " + player.getName() + "<br>";
-  detail += "Health " + player.getHealth() + "<br>";
-  detail += "Stamina " + player.getStamina() + "<br>";
+  var detail = "Name: " + player.getName() + "<br>";
+  detail += "Health: " + player.getHealth() + "<br>";
+  detail += "Stamina: " + player.getStamina() + "<br>";
   detail += "<br>";
-  detail += "Inventory " + "<br>";
-  player.getInventory().forEach(function (items) {
-    if (Array.isArray(items)) {
-      items.forEach(function (item) {
-        detail += item.getName() + "<br>";
-      });
-    }
-  });
+  detail += "Inventory: " + "<br>";
+  for (const item of player.getInventory()) {
+    detail += "<li>" + item.getName() + "</li>";
+  }
   detail += "<br>";
   detail += "what " + player.getName() + " can do" + "<br>";
-  detail += "go north|go south|go east|go west" + "<br>";
-  detail += "take {item}" + "<br>";
+  detail += "go north,go south,go east,go west," + "<br>";
+  detail += "take {object}" + "<br>";
+
   return detail;
 }
 function showDetails(player) {
@@ -297,18 +322,16 @@ function start() {
   player.setName(enterName);
   showDetails(player);
   playGame();
-}
-function start() {
-  var enterName = prompt("name?");
-  player.setName(enterName);
-  showDetails(player);
-  playGame();
+
 }
 function playGame() {
   var room = getRoom(id);
   var roomDescription = room.getDescription();
-  showtext("*เพล้ง*....")
-  showtext(player.getName()+" ลืมตาขึ้นมาในห้องนอนเนื่องจากเสียงบางอยางเเตก...ดูเหมือนจะมาจากห้องอื่น")
+  showtext("*เพล้ง*......");
+  showtext(
+    player.getName() +
+      " ลืมตาขึ้นมาในห้องนอนเนื่องจากเสียงบางอยางเเตก....ดูเหมือนจะมาจากห้องอื่น"
+  );
   showtext(roomDescription);
   showtext("what will " + player.getName() + " do?");
 
@@ -320,7 +343,8 @@ function playGame() {
       if (input.includes("go ")) {
         player.go(input);
       } else if (input.includes("take ")) {
-        player.take(input, id);
+        const itemName = input.split("take ")[1].trim();
+        player.take(itemName, id);
       } else {
         var text = "try again.";
         showtext(text);
