@@ -346,7 +346,7 @@ var roomF1 = new Room(
   [doorG1, note4],
   [tofu]
 );
-var out201 = new End("out 201", 201, "ข้างนอก.", [], []);
+var out201 = new End("out 201", 201, "ข้างนอกมีเเต่ป่า.", [], []);
 const rooms = [room0, roomM1, room1, room100, room100M1, room101, room102, out201 ,roomF1];
 
 const player = new Player();
