@@ -7,7 +7,7 @@ class Player {
   constructor(name = "Tofu") {
     this.#name = name;
     this.#health = 100;
-    this.#stamina = 100;
+    this.#stamina = 200;
     this.#inventory = [];
   }
 
