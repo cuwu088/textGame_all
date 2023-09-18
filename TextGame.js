@@ -241,17 +241,17 @@ class End extends Room {
     super(name, id, description, ways, objects, items);
   }
   ending() {
+    let text;
     for (const item of player.getInventory()) {
       if (item.getId() === 10) {
-        var text = "Ending:"+Player.getName()+"เดินออกจากบ้าน...ทองฟ้ามีสีเเดงและพระจันทร์ที่มืดสนิท";
-        showtext(text);
-        showPopup();
-      } else {
-        var text = "Ending:"+Player.getName()+"เดินออกจากบ้านและไม่กลับมาอีกเลย";
-        showtext(text);
-        showPopup();
+        text = "Ending: " + player.getName() + " เดินออกจากบ้าน...ท้องฟ้ามีสีแดงและพระจันทร์ที่มืดสนิท";
+        break;
       }
     }
+    if (!text) {
+      text = "Ending: " + player.getName() + " เดินออกจากบ้านและไม่กลับมาอีกเลย";
+    }
+    return text;
   }
 }
 
@@ -341,16 +341,15 @@ var room1 = new Room(
 var roomF1 = new Room(
   "ห้องใต้ดิน",
   666,
-  "ทางที่เข้ามาเป็นประตูเก่าๆ(door)...ตรงกลางห้องมีวงกลมซึ่งข่างในมีลวดลายเรขาคณิตสลับซับซ้อนที่ถูกวาดไว้บนพื้นด้วยสสารสีเเดงและรอบๆมีเเทียนที่ถูกจุดอยู่เเละที่มุมห้องมีเศษกระดาษ(note)วางอยู่.",
+  "ทางที่เข้ามาเป็นประตูเก่าๆ(door)...ตรงกลางห้องมีวงกลมซึ่งข่างในมีลวดลายเรขาคณิตสลับซับซ้อนที่ถูกวาดไว้บนพื้นด้วยสสารสีเเดงตรงกลางมี x วางอยู่และรอบๆมีเเทียนที่ถูกจุดอยู่เเละที่มุมห้องมีเศษกระดาษ(note)วางอยู่.",
   [],
   [doorG1, note4],
-  []
+  [tofu]
 );
 var out201 = new End("out 201", 201, "ข้างนอก.", [], []);
 const rooms = [room0, roomM1, room1, room100, room100M1, room101, room102, out201 ,roomF1];
 
 const player = new Player();
-closePopup();
 start();
 
 function showtext(text) {
@@ -400,18 +399,6 @@ function showDetails(player) {
   playerDetails.innerHTML = details(player);
 }
 
-function showPopup() {
-  var popup = document.getElementById("popup");
-  var body = document.body;
-  popup.style.display = "flex";
-  body.style.overflow = "hidden";
-}
-function closePopup() {
-  var popup = document.getElementById("popup");
-  var body = document.body;
-  popup.style.display = "none";
-  body.style.overflow = "auto";
-}
 function reloadPage() {
   location.reload();
 }
@@ -478,9 +465,9 @@ function playGame() {
       showDetails(player);
 
       if (room instanceof End) {
-        room.ending();
-
+        text = room.ending();
         showtext(roomName + ": " + roomDescription);
+        showtext(text);
 
         var resultBox = document.getElementById("resultBox");
         var reloadButton = document.createElement("button");
